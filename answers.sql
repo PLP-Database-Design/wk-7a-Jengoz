@@ -7,73 +7,42 @@ products VARCHAR (255)
 );
 
 -- Step 2: Insert sample data into ProductDetail --
-INSERT INTO ProductDetail(OrderID,CustomerName,products)
+INSERT INTO productdetail(OrderID,CustomerName,Products)
 VALUES
-(101,'John Doe','Laptop,Mouse'),
-(102,'Jane Smith','Tablet,keyboard,Mouse'),
-(103,'Emly Clark','Phone');
+(101, 'John Doe','Laptop'),
+(101, 'John Doe','Mouse'),
+(102, 'Jane Smith','Tablet'),
+(102, 'Jane Smith','Keyboard'),
+(102, 'Jane Smith', 'Mouse'),
+(103, 'Emily Clark','Phone');
 
--- Step 3: Create normalized Orders table --
-CREATE TABLE Orders (
-OrderID INT PRIMARY KEY,
-CustomerName VARCHAR(100)
-);
-
-CREATE TABLE OrderProducts (
-OrderID INT,
-Product VARCHAR(100),
-FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
-);
-
--- Step 5: Insert unique orders --
-INSERT INTO Orders (OrderID, CustomerName)
-SELECT DISTINCT OrderID, CustomerName FROM ProductDetail;
-
--- Step 6: Simulate 1NF split manually --
-INSERT INTO OrderProducts (OrderID, Product) VALUES
-(101, 'Laptop'),
-(101, 'Mouse'),
-(102, 'Tablet'),
-(102, 'Keyboard'),
-(102, 'Mouse'),
-(103, 'Phone');
 
 
 /* Question 2 Achieving 2NF (Second Normal Form) */
--- Step 1: Create the original 1NF table --
-CREATE TABLE OrderDetailsRaw (
-OrderID INT,
-CustomerName VARCHAR(100),
-Product VARCHAR(100),
-Quantity INT
-);
-
--- Step 2: Insert sample data into OrderDetailsRaw --
-INSERT INTO OrderDetailsRaw (OrderID, CustomerName, Product, Quantity) VALUES
-(101, 'John Doe', 'Laptop', 2),
-(101, 'John Doe', 'Mouse', 1),
-(102, 'Jane Smith', 'Tablet', 3),
-(102, 'Jane Smith', 'Keyboard', 1),
-(102, 'Jane Smith', 'Mouse', 2),
-(103, 'Emily Clark', 'Phone', 1);
-
--- Step 3: Create the normalized tables --
 CREATE TABLE Orders (
 OrderID INT PRIMARY KEY,
 CustomerName VARCHAR(100)
 );
 
-CREATE TABLE OrderDetails (
+INSERT INTO Orders (OrderID, CustomerName)
+VALUES
+(101, 'John Doe'),
+(102, 'Jane Smith'),
+(103, 'Emily Clark');
+
+CREATE TABLE Product (
 OrderID INT,
 Product VARCHAR(100),
 Quantity INT,
+PRIMARY KEY (OrderID, Product),
 FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
 );
 
--- step 4: Populate Orders & OrderDetails tables --
-INSERT INTO Orders (OrderID, CustomerName)
-SELECT DISTINCT OrderID, CustomerName FROM OrderDetailsRaw;
-
-INSERT INTO Orders (OrderID, CustomerName)
-SELECT DISTINCT OrderID, CustomerName FROM OrderDetailsRaw;
-
+INSERT INTO Product (OrderID, Product, Quantity)
+VALUES
+(101, 'Laptop', 2),
+(101, 'Mouse', 1),
+(102, 'Tablet', 3),
+(102, 'Keyboard', 1),
+(102, 'Mouse', 2),
+(103, 'Phone', 1);
